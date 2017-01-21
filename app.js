@@ -6,6 +6,9 @@ const fs = require('fs');
 const router = express.Router();
 // 정적인 파일 public에 저장
 app.use(express.static('./public'));
+app.use(express.cookieParser());
+app.use(express.bodyParser());
+
 // 보안적용 : x-powered-by 헤더 사용금지
 //http://expressjs.com/ko/advanced/best-practice-security.html
 app.disable('x-powered-by');
