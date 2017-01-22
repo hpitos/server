@@ -8,11 +8,8 @@ const mysql = require('mysql');
 // bodyParser 사용
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({
-    extended: true
+    extended: false
 }));
-// CookieParser 사용
-const cookieParser = require('cookie-parser');
-app.use(cookieParser());
 // 세션 관리 위한 session 사용
 const session = require('express-session');
 // express에 세션 설정 적용
@@ -22,6 +19,16 @@ app.use(session({
     resave: false,
     saveUnitialized: true
 }));
+
+//쿠키 확인 /count
+app.get('/count',function(req,res){
+  if(req.session.count){
+    req.session.count++;
+  }else{
+    req.session.count =1;
+  }
+  res.send('count: ' + req.session.count);
+});
 
 // 정적인 파일 public에 저장
 app.use(express.static('./public'));
@@ -49,21 +56,11 @@ connection.connect(function(err) {
     }
 });
 
-// 쿼리 잘 날라가는 지 확인
-// connection.query('SELECT * FROM root', function(err,rows,fields){
-//   if (err) {
-//     console.log(err);
-//   }else {
-//   console.log('rows', rows);
-//   console.log('fields',fields);
-//   }
-// });
-
 //로그인,회원가입창 라우팅 < url & 관련js위치 >
 app.use('/', require('./routes/login').router);
 app.use('/signin', require('./routes/singin').router);
 
-//signin 에서 post보낼때 mysql에 넣는거
+//mysql 회원가입 쿼리문 날리는거
 app.post('/signin', function(req, res) {
     var user = {
         'user_id': req.body.user_id,
@@ -84,27 +81,74 @@ app.post('/signin', function(req, res) {
     }); //query
 }); //app.post
 
-app.post('/', function(req, res) {
-    var user_id = req.body.user_id;
-    var password = req.body.password;
+//로그인 버튼 구현 성공
+app.post('/',function(req,res){
+  console.log('날라감');
+  var user_id = req.body.user_id;
+  var password = req.body.password;
+  console.log(user_id, password);
 
-    pool.getConnection(function(err, conn) {
-        if (err) console.error('err', err);
-        conn.query('select count(*) from root where user_id=? and password=?', [user_id, password], function(err, rows) {
-            console.log('rows', rows);
-            var cnt = rows[0].cnt;
-            if (cnt == 1) {
-                req.session.user_id = user_id;
-                res.send('<script> alert("로그인성공");location.href="/";</script>');
-            } else {
-                res.json({
-                    result: 'fail'
-                });
-                res.send('<script> alert("로그인실패");history.back();</script>');
-            } // else
-        }); //conn
-    }); //pool
-});//get
+  var sql = 'select count(*) cnt from root where user_id=? and password=?';
+  connection.query(sql, [user_id, password], function(err, rows){
+    console.log('rows',rows);
+    var cnt = rows[0].cnt;
+    if(cnt == 1){
+      res.send('<script> alert("로그인성공");location.href="./";</script>');
+      console.log(cnt);
+    }else {
+      res.send('<script> alert("로그인실패");history.back();</script>');
+      console.log(cnt);
+    }
+  });
+});
+
+
+
+// app.post('/',function(req,res){
+//   console.log('날라감');
+//   var user_id = req.body.user_id;
+//   var password = req.body.password;
+//   console.log(user_id, password);
+//
+//   pool.getConnection(function(err, conn) {
+//       if (err) console.error('err', err);
+//       conn.query('select count(*) from root where user_id=? and password=?', [user_id, password], function(err, rows) {
+//         console.log('rows', rows);
+//         var cnt = rows[0].cnt;
+//         if (cnt == 1) {
+//           req.session.user_id = user_id;
+//           res.send('<script> alert("로그인성공");location.href="/";</script>');
+//         } else {
+//           res.json({
+//             result: 'fail'
+//           });
+//           res.send('<script> alert("로그인실패");history.back();</script>');
+//         } // else
+//       }); //conn
+//     }); //pool
+//   });//get
+
+// app.post('/', function(req, res) {
+//   var user_id = req.body.user_id;
+//   var password = req.body.password;
+//
+//   pool.getConnection(function(err, conn) {
+//     if (err) console.error('err', err);
+//     conn.query('select count(*) from root where user_id=? and password=?', [user_id, password], function(err, rows) {
+//       console.log('rows', rows);
+//       var cnt = rows[0].cnt;
+//       if (cnt == 1) {
+//         req.session.user_id = user_id;
+//         res.send('<script> alert("로그인성공");location.href="/";</script>');
+//       } else {
+//         res.json({
+//           result: 'fail'
+//         });
+//         res.send('<script> alert("로그인실패");history.back();</script>');
+//       } // else
+//     }); //conn
+//   }); //pool
+// });//get
 
 // 로그아웃 구현
 app.get('/logout',function(req,res){
