@@ -10,14 +10,24 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({
     extended: false
 }));
+//ejs사용
+const ejs = require('ejs');
 // 세션 관리 위한 session 사용
 const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 // express에 세션 설정 적용
 //1.쿠키변조 방지, 2.세션을 언제나 저장할지, 3.저장되기전에 uninitial
 app.use(session({
     secret: '!@#$MY!@#$',
     resave: false,
-    saveUnitialized: true
+    saveUnitialized: true,
+    store:new MySQLStore({
+      host: 'localhost',
+      port: 3306,
+      user: 'root',
+      password: '5555',
+      database: 'test1'
+    })
 }));
 
 //쿠키 확인 /count
@@ -59,8 +69,52 @@ connection.connect(function(err) {
 //로그인,회원가입창 라우팅 < url & 관련js위치 >
 app.use('/', require('./routes/login').router);
 app.use('/signin', require('./routes/singin').router);
+app.use('/welcome',require('./routes/welcome').router);
 
-//mysql 회원가입 쿼리문 날리는거
+//로그인성공했을때
+app.get('/log',function(req,res){
+  if(req.session.displayName) {
+    // res.send(req.session);
+    res.send(`
+    <h1>Hello, ${req.session.displayName} </h1>
+    `);
+  } else{
+    res.send(`
+      <h1>Welcome</h1>
+      <a href="/">`)
+  }
+});
+
+//mysql 데이터 비교 로그인 성공
+app.post('/',function(req,res){
+  console.log('날라감');
+  var user_id = req.body.user_id;
+  var password = req.body.password;
+  console.log(user_id, password);
+
+  var sql = 'select count(*) cnt from root where user_id=? and password=?';
+  connection.query(sql, [user_id, password], function(err, rows){
+    console.log('rows',rows);
+    var cnt = rows[0].cnt;
+    if(cnt == 1){
+      req.session.displayName = user_id;
+      res.send('<script> alert("로그인성공");location.href="./welcome";</script>');
+      // res.send('<script> alert("로그인성공");location.href="./log";</script>');
+
+      //세션 코드 실행
+      // req.session.displayName = user_id;
+      // res.send('<script> alert("로그인성공");</script>');
+      // res.redirect('/welcome');
+      console.log(cnt);
+      console.log(user_id);
+    }else {
+      res.send('<script> alert("로그인실패");history.back();</script>');
+      console.log(cnt);
+    }
+  });
+});
+
+//mysql 회원가입 DB쓰기 성공
 app.post('/signin', function(req, res) {
     var user = {
         'user_id': req.body.user_id,
@@ -74,33 +128,15 @@ app.post('/signin', function(req, res) {
     connection.query(sql, user, function(err, result) {
         if (err) {
             console.log(err);
+            res.send('<script>alert("가입실패");</script>');
             res.status(500);
         } else {
+            res.send('<script>alert("가입성공");</script>');
             res.redirect('/') //signin에서 보내고 메인으로 돌아온다.
         } //else
     }); //query
 }); //app.post
 
-//로그인 버튼 구현 성공
-app.post('/',function(req,res){
-  console.log('날라감');
-  var user_id = req.body.user_id;
-  var password = req.body.password;
-  console.log(user_id, password);
-
-  var sql = 'select count(*) cnt from root where user_id=? and password=?';
-  connection.query(sql, [user_id, password], function(err, rows){
-    console.log('rows',rows);
-    var cnt = rows[0].cnt;
-    if(cnt == 1){
-      res.send('<script> alert("로그인성공");location.href="./";</script>');
-      console.log(cnt);
-    }else {
-      res.send('<script> alert("로그인실패");history.back();</script>');
-      console.log(cnt);
-    }
-  });
-});
 
 
 
