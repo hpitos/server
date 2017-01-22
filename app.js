@@ -7,12 +7,21 @@ const router = express.Router();
 const mysql = require('mysql');
 // bodyParser 사용
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
-
-
-// 쿠기 및 바디 파서 사용
-// app.use(express.cookieParser());
-// app.use(express.bodyParser());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+// CookieParser 사용
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+// 세션 관리 위한 session 사용
+const session = require('express-session');
+// express에 세션 설정 적용
+//1.쿠키변조 방지, 2.세션을 언제나 저장할지, 3.저장되기전에 uninitial
+app.use(session({
+    secret: '!@#$MY!@#$',
+    resave: false,
+    saveUnitialized: true
+}));
 
 // 정적인 파일 public에 저장
 app.use(express.static('./public'));
@@ -50,30 +59,61 @@ connection.connect(function(err) {
 //   }
 // });
 
-//signin 에서 post보낼때 mysql에 넣는거
-app.post('/signin',function(req,res) {
-  var user = {
-    'user_id':req.body.user_id,
-    'password':req.body.password,
-    'name':req.body.name,
-    'sex':req.body.sex,
-    'phonenumber':req.body.phonenumber
-  };
-
-  var sql = 'INSERT INTO root SET ?';
-  connection.query(sql,user,function(err,result){
-    if(err){
-      console.log(err);
-      res.status(500);
-    }else{
-      res.redirect('/')
-    }
-  });
-});
-
 //로그인,회원가입창 라우팅 < url & 관련js위치 >
 app.use('/', require('./routes/login').router);
 app.use('/signin', require('./routes/singin').router);
+
+//signin 에서 post보낼때 mysql에 넣는거
+app.post('/signin', function(req, res) {
+    var user = {
+        'user_id': req.body.user_id,
+        'password': req.body.password,
+        'name': req.body.name,
+        'sex': req.body.sex,
+        'phonenumber': req.body.phonenumber
+    };
+
+    var sql = 'INSERT INTO root SET ?';
+    connection.query(sql, user, function(err, result) {
+        if (err) {
+            console.log(err);
+            res.status(500);
+        } else {
+            res.redirect('/') //signin에서 보내고 메인으로 돌아온다.
+        } //else
+    }); //query
+}); //app.post
+
+app.post('/', function(req, res) {
+    var user_id = req.body.user_id;
+    var password = req.body.password;
+
+    pool.getConnection(function(err, conn) {
+        if (err) console.error('err', err);
+        conn.query('select count(*) from root where user_id=? and password=?', [user_id, password], function(err, rows) {
+            console.log('rows', rows);
+            var cnt = rows[0].cnt;
+            if (cnt == 1) {
+                req.session.user_id = user_id;
+                res.send('<script> alert("로그인성공");location.href="/";</script>');
+            } else {
+                res.json({
+                    result: 'fail'
+                });
+                res.send('<script> alert("로그인실패");history.back();</script>');
+            } // else
+        }); //conn
+    }); //pool
+});//get
+
+// 로그아웃 구현
+app.get('/logout',function(req,res){
+  req.session.destory(function(err){
+    if(err) console.error('err',err);
+    res.send('<script>alert("로그아웃 되었습니다.");location.href="/"</script>');
+  });//req.session.destory
+});//get
+
 
 // 포트 8888
 app.listen(8888, function() {

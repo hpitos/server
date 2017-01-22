@@ -87,23 +87,32 @@
                 <div class="col-xs-4">
                     <!--로그인 툴 -->
                     <div class="login-box well">
-                        <form accept-charset="UTF-8" role="form" method="post" action="">
+
+                        <form accept-charset="UTF-8" role="form" method="post" action="/">
                             <legend>LOGIN</legend>
+
                             <div class="form-group">
                                 <label for="username-email">E-mail or ID</label>
                                 <input name="user_id" value='' id="username-email" placeholder="E-mail or Username" type="text" class="form-control" />
                             </div>
+
                             <div class="form-group">
                                 <label for="password">Password</label>
                                 <input name="password" id="password" value='' placeholder="Password" type="password" class="form-control" />
                             </div>
+
                             <!-- 기존로그인버튼
                             <div class="form-group">
                                 <input type="submit" class="btn btn-default btn-login-submit btn-block m-t-md" value="Login">
                             </div> -->
 
+                            <!-- 버튼 임시방편 -->
+                            <div class ="my_btn my_btn-2">
+                              <input type = "submit" onclick="alert('확인');" class="my_btn my_btn-2">
+                            </div>
+
                             <!-- 로그인버튼 MyStyle.css -->
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                             <section class="my_buttons">
                                 <a type="submit" class="my_btn my_btn-1">
                                 <svg>
@@ -112,7 +121,8 @@
                                 LOGIN
                               </a>
                               </section>
-                          </div>
+                          </div> -->
+                        </form>
 
                           <div>
                             <span class='text-center'><a  class='text-center' class="text-sm" >
@@ -135,7 +145,7 @@
                             </section>
                         </div>
 
-                    </form>
+
                 </div>
             </div>
             <!--이미지 -->
