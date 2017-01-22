@@ -83,69 +83,77 @@
             </div>
 
             <div class="row">
-                  <div class="col-xs-1"></div>
+                <div class="col-xs-1"></div>
                 <!-- 내용 -->
                 <div class="col-xs-4">
-                  <!--로그인 툴 -->
+
+                    <!--회원가입 폼 START -->
                     <div class="login-box well">
-                        <form accept-charset="UTF-8" role="form" method="post" action="">
+
+                        <form accept-charset="UTF-8" role="form" method="post" action="/signin">
                             <legend>SIGN IN</legend>
                             <div class="form-group">
                                 <label for="username-email">*E-mail or ID</label>
-                                <input name="user_id" value='' id="username-email" placeholder="E-mail or Username" type="text" class="form-control" />
+                                <input name="user_id"  id="username-email" placeholder="E-mail or Username" type="text" class="form-control" />
                             </div>
                             <div class="form-group">
                                 <label for="password">*Password</label>
-                                <input name="password" id="password" value='' placeholder="Password" type="password" class="form-control" />
+                                <input name="password" id="password"  placeholder="Password" type="password" class="form-control" />
                             </div>
                             <div class="form-group">
                                 <label for="password Confirm">*Password Confirm</label>
-                                <input name="password Confirm" id="password Confirm" value='' placeholder="Password Confirm" type="password" class="form-control" />
+                                <input name="password Confirm" id="password Confirm"  placeholder="Password Confirm" type="password" class="form-control" />
                             </div>
                             <div class="form-group">
-                              <label for="name">*name</label>
-                              <input naem="name" id="name" placeholder="name" value='' type="text" class="form-control"/>
+                                <label for="name">*name</label>
+                                <input name="name" id="name" placeholder="name"  type="text" class="form-control" />
                             </div>
-                            <div class ="form-goup">
-                              <div><label>*SEX</label></div>
-                              <div>
-                                <input id="MALE" type="radio" name="chk-info" value="MALE" />
-                                <label for = "MALE"> MALE </label>
-                                <input id="FEMALE" type="radio" name="chk-info" value="FEMALE" />
-                                <label for = "FEMALE"> FEMALE </label>
-                              </div>
+                            <div class="form-goup">
+                                <div><label>*SEX</label></div>
+                                <div>
+                                    <input id="MALE" type="radio" name="sex" value="1" />
+                                    <label for="MALE"> MALE </label>
+                                    <input id="FEMALE" type="radio" name="sex" value="2" />
+                                    <label for="FEMALE"> FEMALE </label>
+                                </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="Phonenumber">*PhoneNumber</label>
-                                <input name="Phonenumber"  id="Phonenumber" value='010-' placeholder="010-1234-1234" type="text" class="form-control" />
+                                <label for="phonenumber">*PhoneNumber</label>
+                                <input name="phonenumber" id="phonenumber" value='010-' placeholder="010-1234-1234" type="text" class="form-control" />
+                            </div>
+
+                            <!-- 버튼 임시방편 -->
+                            <div class ="my_btn my_btn-2">
+                              <input type = "submit" onclick="alert('확인');" class="my_btn my_btn-2">
                             </div>
 
 
-
-                            <div class="form-group">
-                            <section class="my_buttons">
-                                <a href="signin" class="my_btn my_btn-1">
-                                <svg>
-                                  <rect x="0" y="0" fill="none" width="100%" height="100%">
-                                </svg>
-                              SIGN
-                              </a>
-                              </section>
-                          </div>
+                            <!-- <div class ="button">
+                              <button type = "submit" onclik="alert('complete');" >
+                              </button>
+                            </div> -->
 
 
-                    </form>
+                            <!-- <div class="button">
+                                <a type="submit" onclick="alert('complete');" class="my_btn my_btn-1">
+                                    <svg><rect x="0" y="0" fill="none" width="100%" height="100%"></svg> SIGN
+                                </a>
+                            </div> -->
+
+                        </form>
+                        <!-- 회원가입폼 END -->
+
+                    </div>
                 </div>
+                <div class="col-xs-6">
+                    <img src="signin.jpg" class="img-rounded text-center" width="475" height="auto">
+                </div>
+                <div class="col-xs-1"></div>
             </div>
-            <div class="col-xs-6">
-              <img src = "signin.jpg" class= "img-rounded text-center" width="475" height="auto" >
-            </div>
-            <div class="col-xs-1"></div>
-        </div>
 
-        <!--cf. href="/bbs/index.php?mid=index&act=dispMemberFindAccount" -->
-    </div>
+            <!--cf. href="/bbs/index.php?mid=index&act=dispMemberFindAccount" -->
+        </div>
         <!-- container exit -->
 
         <!-- Bootstrap core JavaScript
@@ -157,4 +165,5 @@
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug
         <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
     </body>
+
 </html>
