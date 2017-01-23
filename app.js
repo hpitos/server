@@ -11,7 +11,10 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 //ejs사용
-const ejs = require('ejs');
+// const ejs = require('ejs');
+// app.engine('ejs', require('ejs').renderFile);
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
 // 세션 관리 위한 session 사용
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
